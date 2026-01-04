@@ -36,17 +36,27 @@ apotek-uas/
 ├── data/                  # Folder database JSON
 │   ├── obat.json
 │   ├── transaksi.json
-│   └── stok.json
+│   ├── stok.json
+│   └── users.json
+├── middleware/            # Middleware
+│   └── auth.js
 ├── routes/                # Route handlers
 │   ├── obat.js
 │   ├── transaksi.js
 │   ├── stok.js
 │   └── laporan.js
 ├── controllers/           # Business logic
+│   ├── authController.js
 │   ├── obatController.js
 │   ├── transaksiController.js
 │   ├── stokController.js
 │   └── laporanController.js
+├── routes/                # Route handlers
+│   ├── auth.js
+│   ├── obat.js
+│   ├── transaksi.js
+│   ├── stok.js
+│   └── laporan.js
 ├── utils/                 # Helper functions
 │   └── database.js
 └── public/                # Frontend files
@@ -85,6 +95,12 @@ apotek-uas/
 - `GET /api/laporan/bulanan?bulan=X&tahun=YYYY` - Laporan bulanan
 - `GET /api/laporan/terlaris?limit=10` - Obat terlaris
 
+### Authentication
+
+- `POST /api/auth/login` - Login user
+- `POST /api/auth/register` - Register user baru (Admin only)
+- `GET /api/auth/users` - Get all users (Admin only)
+
 ## Teknologi
 
 - **Node.js** - Runtime environment
@@ -92,8 +108,22 @@ apotek-uas/
 - **JSON** - Database (file-based)
 - **Vanilla JavaScript** - Frontend
 
+## Default User Accounts
+
+**Admin:**
+
+- Username: `admin`
+- Password: `admin123`
+
+**Kasir:**
+
+- Username: `kasir`
+- Password: `kasir123`
+
 ## Catatan
 
 - Data disimpan dalam file JSON di folder `data/`
-- Tidak ada sistem autentikasi/login
+- Sistem autentikasi dengan role-based access control
+- Pajak 11% otomatis pada setiap transaksi
 - Cocok untuk penggunaan sederhana atau UAS
+- Copyright © 2026 by revin
