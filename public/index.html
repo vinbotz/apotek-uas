@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistem Manajemen Apotek</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-container">
+      <div class="login-box">
+        <h1>💊 Sistem Manajemen Apotek</h1>
+        <h2>Login</h2>
+        <form id="login-form" onsubmit="handleLogin(event)">
+          <input
+            type="text"
+            id="login-username"
+            placeholder="Username"
+            required
+          />
+          <input
+            type="password"
+            id="login-password"
+            placeholder="Password"
+            required
+          />
+          <button type="submit" class="btn btn-primary btn-block">Masuk</button>
+        </form>
+        <div
+          id="login-error"
+          class="alert-error"
+          style="display: none; margin-top: 15px"
+        ></div>
+        <div style="margin-top: 20px; font-size: 12px; color: #666">
+          <p><strong>Demo:</strong></p>
+          <p>
+            Admin: username: <code>admin</code> | password:
+            <code>admin123</code>
+          </p>
+          <p>
+            Kasir: username: <code>kasir</code> | password:
+            <code>kasir123</code>
+          </p>
+        </div>
+        <div
+          style="
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+          "
+        >
+          <p style="margin: 0">&copy; 2026 by revin</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main App (hidden until login) -->
+    <div id="main-app" style="display: none">
+      <div class="container">
+        <header>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <h1>💊 Sistem Manajemen Apotek</h1>
+            <div style="display: flex; align-items: center; gap: 15px">
+              <span id="user-info" style="color: white; font-size: 14px"></span>
+              <button
+                class="btn btn-secondary"
+                onclick="handleLogout()"
+                style="background: rgba(255, 255, 255, 0.2)"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <nav class="tabs">
+          <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+          <button class="tab-btn" data-tab="obat">Manajemen Obat</button>
+          <button class="tab-btn" data-tab="transaksi">Penjualan</button>
+          <button class="tab-btn" data-tab="stok">Manajemen Stok</button>
+          <button class="tab-btn" data-tab="laporan">Laporan</button>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+          <h2>Dashboard</h2>
+          <div id="dashboard-stats" class="stats-grid">
+            <!-- Stats akan diisi oleh JavaScript -->
+          </div>
+        </div>
+
+        <!-- Manajemen Obat Tab -->
+        <div id="obat" class="tab-content">
+          <div class="section-header">
+            <h2>Manajemen Obat</h2>
+            <button
+              class="btn btn-primary admin-only"
+              onclick="showAddObatForm()"
+              style="display: none"
+            >
+              + Tambah Obat
+            </button>
+          </div>
+
+          <div id="add-obat-form" class="form-modal" style="display: none">
+            <div class="modal-content">
+              <span class="close" onclick="closeForm('add-obat-form')"
+                >&times;</span
+              >
+              <h3>Tambah Obat Baru</h3>
+              <form id="form-tambah-obat" onsubmit="addObat(event)">
+                <input type="text" placeholder="Nama Obat" required />
+                <input
+                  type="text"
+                  placeholder="Kategori (contoh: Antibiotik)"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Satuan (contoh: Box, Strip)"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Harga Beli"
+                  step="0.01"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Harga Jual"
+                  step="0.01"
+                  required
+                />
+                <input type="number" placeholder="Stok Awal" required />
+                <button type="submit" class="btn btn-primary">Simpan</button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  onclick="closeForm('add-obat-form')"
+                >
+                  Batal
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div id="edit-obat-form" class="form-modal" style="display: none">
+            <div class="modal-content">
+              <span class="close" onclick="closeForm('edit-obat-form')"
+                >&times;</span
+              >
+              <h3>Edit Obat</h3>
+              <form id="form-edit-obat" onsubmit="updateObat(event)">
+                <input type="hidden" id="edit-obat-id" />
+                <input
+                  type="text"
+                  id="edit-obat-nama"
+                  placeholder="Nama Obat"
+                  required
+                />
+                <input
+                  type="text"
+                  id="edit-obat-kategori"
+                  placeholder="Kategori"
+                  required
+                />
+                <input
+                  type="text"
+                  id="edit-obat-satuan"
+                  placeholder="Satuan"
+                  required
+                />
+                <input
+                  type="number"
+                  id="edit-obat-harga-beli"
+                  placeholder="Harga Beli"
+                  step="0.01"
+                  required
+                />
+                <input
+                  type="number"
+                  id="edit-obat-harga-jual"
+                  placeholder="Harga Jual"
+                  step="0.01"
+                  required
+                />
+                <button type="submit" class="btn btn-primary">Update</button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  onclick="closeForm('edit-obat-form')"
+                >
+                  Batal
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table id="table-obat">
+              <thead>
+                <tr>
+                  <th>Nama Obat</th>
+                  <th>Kategori</th>
+                  <th>Satuan</th>
+                  <th>Harga Beli</th>
+                  <th>Harga Jual</th>
+                  <th>Stok</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-obat">
+                <!-- Data akan diisi oleh JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Transaksi Tab -->
+        <div id="transaksi" class="tab-content">
+          <div class="section-header">
+            <h2>Penjualan / Transaksi</h2>
+          </div>
+
+          <div class="transaksi-container">
+            <div class="transaksi-form">
+              <h3>Tambah Item</h3>
+              <select id="select-obat">
+                <option value="">Pilih Obat</option>
+              </select>
+              <input type="number" id="qty-obat" placeholder="Qty" min="1" />
+              <button class="btn btn-primary" onclick="addItemToCart()">
+                Tambah ke Keranjang
+              </button>
+
+              <h3>Keranjang</h3>
+              <div id="cart-items"></div>
+              <div id="cart-total" class="cart-total"></div>
+              <button class="btn btn-success" onclick="checkout()">
+                Proses Transaksi
+              </button>
+            </div>
+
+            <div class="transaksi-history">
+              <h3>Riwayat Transaksi</h3>
+              <div id="transaksi-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stok Tab -->
+        <div id="stok" class="tab-content">
+          <div class="section-header">
+            <h2>Manajemen Stok</h2>
+            <button
+              class="btn btn-primary admin-only"
+              onclick="showUpdateStokForm()"
+              style="display: none"
+            >
+              + Update Stok
+            </button>
+          </div>
+
+          <div id="update-stok-form" class="form-modal" style="display: none">
+            <div class="modal-content">
+              <span class="close" onclick="closeForm('update-stok-form')"
+                >&times;</span
+              >
+              <h3>Update Stok</h3>
+              <form id="form-update-stok" onsubmit="updateStok(event)">
+                <select id="stok-obat-id" required>
+                  <option value="">Pilih Obat</option>
+                </select>
+                <select id="stok-jenis" required>
+                  <option value="">Pilih Jenis</option>
+                  <option value="Masuk">Stok Masuk</option>
+                  <option value="Keluar">Stok Keluar</option>
+                </select>
+                <input
+                  type="number"
+                  id="stok-perubahan"
+                  placeholder="Jumlah"
+                  min="1"
+                  required
+                />
+                <input
+                  type="text"
+                  id="stok-keterangan"
+                  placeholder="Keterangan"
+                />
+                <button type="submit" class="btn btn-primary">Update</button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  onclick="closeForm('update-stok-form')"
+                >
+                  Batal
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nama Obat</th>
+                  <th>Kategori</th>
+                  <th>Stok Saat Ini</th>
+                  <th>Harga Jual</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-stok">
+                <!-- Data akan diisi oleh JavaScript -->
+              </tbody>
+            </table>
+          </div>
+
+          <h3 style="margin-top: 30px">Riwayat Perubahan Stok</h3>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Obat</th>
+                  <th>Jenis</th>
+                  <th>Perubahan</th>
+                  <th>Keterangan</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-stok-history">
+                <!-- Data akan diisi oleh JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Laporan Tab -->
+        <div id="laporan" class="tab-content">
+          <h2>Laporan Penjualan</h2>
+
+          <div class="laporan-filters">
+            <div>
+              <label>Laporan Harian:</label>
+              <input type="date" id="filter-tanggal" />
+              <button class="btn btn-primary" onclick="loadLaporanHarian()">
+                Tampilkan
+              </button>
+            </div>
+            <div>
+              <label>Laporan Bulanan:</label>
+              <input type="month" id="filter-bulan" />
+              <button class="btn btn-primary" onclick="loadLaporanBulanan()">
+                Tampilkan
+              </button>
+            </div>
+            <div>
+              <button class="btn btn-secondary" onclick="loadObatTerlaris()">
+                Obat Terlaris
+              </button>
+            </div>
+          </div>
+
+          <div id="laporan-content"></div>
+        </div>
+
+        <!-- Footer -->
+        <footer
+          style="
+            text-align: center;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #666;
+            border-top: 1px solid #ddd;
+          "
+        >
+          <p style="margin: 0">&copy; Copyright 2026 by revin</p>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Custom Modal Popup -->
+    <div id="custom-modal" class="custom-modal" style="display: none">
+      <div class="custom-modal-content">
+        <div class="custom-modal-header">
+          <span id="modal-icon" class="modal-icon">ℹ️</span>
+          <h3 id="modal-title">Informasi</h3>
+          <span class="modal-close" onclick="closeCustomModal()">&times;</span>
+        </div>
+        <div class="custom-modal-body">
+          <p id="modal-message"></p>
+        </div>
+        <div class="custom-modal-footer">
+          <button
+            id="modal-btn-ok"
+            class="btn btn-primary"
+            onclick="closeCustomModal()"
+            style="display: none"
+          >
+            OK
+          </button>
+          <button
+            id="modal-btn-yes"
+            class="btn btn-primary"
+            onclick="modalConfirm(true)"
+            style="display: none"
+          >
+            Ya
+          </button>
+          <button
+            id="modal-btn-no"
+            class="btn btn-secondary"
+            onclick="modalConfirm(false)"
+            style="display: none"
+          >
+            Tidak
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
